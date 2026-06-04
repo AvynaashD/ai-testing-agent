@@ -1,7 +1,7 @@
 import streamlit as st
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
-from langchain.chains import LLMChain
+from langchain_core.output_parsers import StrOutputParser
 
 # 1. Page Configuration
 st.set_page_config(page_title="AI Test Engineering Assistant", page_icon="🤖", layout="wide")
@@ -13,12 +13,10 @@ st.caption("A complete, high-performance solution for QA professionals to genera
 # 3. Sidebar for API Key and Mode Selection
 with st.sidebar:
     st.header("Settings & Tools")
-    # User inputs their OpenAI API key safely
     openai_api_key = st.text_input("Enter OpenAI API Key", type="password")
     
     st.divider()
     
-    # Dropdown to select the QA task
     qa_task = st.selectbox(
         "Choose QA Task:",
         [
@@ -28,17 +26,18 @@ with st.sidebar:
             "Test Reports & Root Cause Analysis (RCA)"
         ]
     )
-    
     st.info("Tip: Provide clear requirements or error logs in the main window for the best results.")
 
 # 4. Core Logic / Guardrail for API Key
 if not openai_api_key:
     st.warning("Please enter your OpenAI API Key in the sidebar to activate the AI Agent.")
 else:
-    # Initialize the LangChain LLM
+    # Initialize the modern LangChain LLM
     llm = ChatOpenAI(temperature=0.2, openai_api_key=openai_api_key, model_name="gpt-4-turbo")
+    
+    # Modern output parser to turn AI data into clean text
+    output_parser = StrOutputParser()
 
-    # Define specialized system instructions for hyper-detailed QA outputs
     base_instructions = (
         "You are an expert, world-class Lead QA Engineer and Automation Architect. "
         "Your task is to provide exceptionally detailed, comprehensive, and production-ready "
@@ -61,8 +60,10 @@ else:
                         "Environment Requirements, Risks & Mitigations, and Entry/Exit Criteria."
                     )
                     prompt = PromptTemplate(input_variables=["input"], template=template)
-                    chain = LLMChain(llm=llm, prompt=prompt)
-                    response = chain.run(user_input)
+                    
+                    # Modern Chain Construction: Prompt -> Model -> Output Parser
+                    chain = prompt | llm | output_parser
+                    response = chain.invoke({"input": user_input})
                     st.markdown(response)
             else:
                 st.error("Please provide requirements first.")
@@ -82,8 +83,9 @@ else:
                         "Step-by-step Execution, Expected Result, and include Positive, Negative, and Boundary Edge Cases."
                     )
                     prompt = PromptTemplate(input_variables=["input"], template=template)
-                    chain = LLMChain(llm=llm, prompt=prompt)
-                    response = chain.run(user_input)
+                    
+                    chain = prompt | llm | output_parser
+                    response = chain.invoke({"input": user_input})
                     st.markdown(response)
             else:
                 st.error("Please provide feature details.")
@@ -104,8 +106,9 @@ else:
                         "proper assertions, and add comments explaining the code logic."
                     )
                     prompt = PromptTemplate(input_variables=["input"], template=template)
-                    chain = LLMChain(llm=llm, prompt=prompt)
-                    response = chain.run(user_input)
+                    
+                    chain = prompt | llm | output_parser
+                    response = chain.invoke({"input": user_input})
                     st.code(response, language='python' if 'Python' in framework else 'javascript')
             else:
                 st.error("Please describe the workflow to automate.")
@@ -125,8 +128,9 @@ else:
                         "of the failures, identified patterns, and concrete preventive/corrective actions."
                     )
                     prompt = PromptTemplate(input_variables=["input"], template=template)
-                    chain = LLMChain(llm=llm, prompt=prompt)
-                    response = chain.run(user_input)
+                    
+                    chain = prompt | llm | output_parser
+                    response = chain.invoke({"input": user_input})
                     st.markdown(response)
             else:
                 st.error("Please paste failure logs or execution data.")
