@@ -10,7 +10,7 @@ st.set_page_config(page_title="AI Test Engineering Assistant", page_icon="🤖",
 st.title("🤖 Test Engineering Assistant")
 st.caption("A complete, free, high-performance solution for QA professionals using Llama 3 via Groq.")
 
-# 3. Sidebar Configuration (Clean & No Key Input Field)
+# 3. Sidebar Configuration
 with st.sidebar:
     st.header("Settings & Tools")
     qa_task = st.selectbox(
@@ -24,12 +24,16 @@ with st.sidebar:
     )
     st.info("The agent is powered by Llama 3. Provide detailed logs or requirements for best results.")
 
-# 4. Initialize the Free Groq LLM
-# Streamlit will automatically look for the GROQ_API_KEY environment variable
+# 4. Core AI Logic (Safely Passing the Key Directly)
 try:
+    # Safely fetch the key from Streamlit's secrets manager
+    api_key = st.secrets["GROQ_API_KEY"]
+    
+    # Initialize the Groq LLM with the explicit key and stable model name
     llm = ChatGroq(
         temperature=0.2, 
-        model_name="llama3-70b-8192"  # Using a massive, smart 70B model for rich details
+        groq_api_key=api_key,
+        model_name="llama-3.1-70b-versatile"  # Updated stable model name
     )
     output_parser = StrOutputParser()
 
@@ -125,5 +129,7 @@ try:
             else:
                 st.error("Please paste failure logs or execution data.")
 
+except KeyError:
+    st.error("Setup Error: 'GROQ_API_KEY' was not found inside your Streamlit Cloud Secrets dashboard. Please check your spelling.")
 except Exception as e:
-    st.error("Setup Error: Please ensure your Groq API Key is added to the Streamlit Cloud Secrets dashboard.")
+    st.error(f"Execution Error: {str(e)}")
