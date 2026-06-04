@@ -33,7 +33,7 @@ try:
     llm = ChatGroq(
         temperature=0.2, 
         groq_api_key=api_key,
-        model_name="llama-3.1-70b-versatile"  # Updated stable model name
+        model_name="llama-3.3-70b-versatile"  # Updated stable model name
     )
     output_parser = StrOutputParser()
 
