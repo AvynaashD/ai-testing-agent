@@ -6,13 +6,31 @@ from langchain_core.output_parsers import StrOutputParser
 # 1. Page Configuration
 st.set_page_config(page_title="AI Test Engineering Assistant", page_icon="🤖", layout="wide")
 
-# --- HIDE STREAMLIT BRANDING & GITHUB ICON ---
+# --- COMPLETE UNBRANDED CLEAN INTERFACE (FOOLPROOF CSS) ---
 hide_streamlit_style = """
             <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            header {visibility: hidden;}
-            .viewerBadge_container__1QSob {display: none !important;}
+            /* Hide the entire top header bar (including GitHub icon and status) */
+            header[data-testid="stHeader"] {
+                display: none !important;
+                visibility: hidden !important;
+            }
+            
+            /* Hide the hamburger main menu button */
+            #MainMenu {
+                display: none !important;
+                visibility: hidden !important;
+            }
+            
+            /* Hide the bottom footer completely */
+            footer {
+                display: none !important;
+                visibility: hidden !important;
+            }
+            
+            /* Remove any extra top padding caused by the hidden header */
+            .stApp {
+                margin-top: -60px !important;
+            }
             </style>
             """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
