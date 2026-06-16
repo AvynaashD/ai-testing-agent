@@ -6,6 +6,17 @@ from langchain_core.output_parsers import StrOutputParser
 # 1. Page Configuration
 st.set_page_config(page_title="AI Test Engineering Assistant", page_icon="🤖", layout="wide")
 
+# --- HIDE STREAMLIT BRANDING & GITHUB ICON ---
+hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            .viewerBadge_container__1QSob {display: none !important;}
+            </style>
+            """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 # 2. Header & Introduction
 st.title("🤖 Test Engineering Assistant")
 st.caption("A complete, free, high-performance solution for QA professionals using Llama 3 via Groq.")
